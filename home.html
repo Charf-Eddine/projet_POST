@@ -9,6 +9,9 @@
      <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
      <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
+     <!--import axios-->
+     <script src="./node_modules/axios/dist/axios.min.js"></script>
+
      <style>
         body{
             background: #f0ecff;
@@ -220,4 +223,57 @@
     </div>
     <!--// main container //-->
 </body>
+
+<script>
+
+    axios.get("https://tarmeezacademy.com/api/v1/posts")
+    .then((response)=>{
+        const posts= response.data.data
+
+        document.getElementById("posts").innerHTML=""
+       for(post of posts)
+       {
+        console.log(post)
+        
+        const author = post.author
+        post.title = ""
+
+        if(post.title != null){
+            post.title = post.title
+        }
+        
+        let content=`
+         <div class="card shadow">
+                        <div class="card-header">
+                            <img class="rounded-circle border border-2" src="${author.profile_image}" alt="" style="width: 40px; height: 40px;">
+                            <b>${author.username}</b>
+
+                        </div>
+                        <div class="card-body">
+                            <img class="w-100" style="height: 400px" src="${post.image}"alt="" >
+                            <h6 style="color: rgb(202, 199, 199);" class="mt-1">
+                                ${post.created_at}
+                            </h6>
+                            <h5>
+                                ${post.title}
+                            </h5>
+                            <p>
+                               ${post.body}
+                            </p>
+
+                            <hr>
+                            <div>
+                                <i class="bi bi-pen"></i>
+                                <span>
+                                    (3) comments
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+        `
+        document.getElementById("posts").innerHTML+=content
+       }
+    })
+</script>
 </html>
