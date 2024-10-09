@@ -59,7 +59,7 @@
      <!--// LOGIN MODAL //-->
 
      <!-- ====================== ALERTS ==================== --> 
-     <div id="success-alert"></div>
+     <div id="success-alert" class="show fade"  style="position: fixed;z-index: 999999;width: 30%;top: 0;right: 0;"></div>
 
 
 
@@ -136,6 +136,7 @@
                                 <i class="bi bi-pen"></i>
                                 <span>
                                     (3) comments
+                                    
                                 </span>
                             </div>
 
@@ -319,7 +320,10 @@
                             <div>
                                 <i class="bi bi-pen"></i>
                                 <span>
-                                    (3) comments
+                                    (${post.comments_count}) comments
+                                    <span id="post-tags-${post.id}">
+                                    </span>
+                                   
                                 </span>
                             </div>
 
@@ -327,6 +331,20 @@
                     </div>
         `
         document.getElementById("posts").innerHTML+=content
+
+        const currentPostTagsId=`post-tags-${post.id}`
+        document.getElementById(currentPostTagsId).innerHTML=""
+
+        for(tag of post.tags)
+        {
+            console.log(tag.name)
+            let tagsContent=
+                ` <button class="btn btn-sm rounded-5" style="background-color: gray;color: white">
+                             ${tag.name}
+                </button>`
+
+                document.getElementById(currentPostTagsId).innerHTML+=tagsContent
+        }
        }
     })
 
@@ -353,7 +371,8 @@
             const modalInstance=bootstrap.Modal.getInstance(modal)
 
             modalInstance.hide()
-            alert("user logged in succesfully ")
+            // alert("user logged in succesfully ")
+            showSuccessAlert("logged in successfully")
             setupUI()
         })
         // console.log(username,password)
@@ -364,14 +383,15 @@
         localStorage.removeItem("token")
         localStorage.removeItem("user")
 
-        alert("logged out successfully")
+        showSuccessAlert("logged out successfully")
+       
         setupUI()
     }
 
-    function showSuccessAlert()
+    function showSuccessAlert(customMessage)
     {
         const alertPlaceholder = document.getElementById('success-alert')
-            const appendAlert = (message, type) => {
+            const alert = (message, type) => {
             const wrapper = document.createElement('div')
             wrapper.innerHTML = [
                 `<div class="alert alert-${type} alert-dismissible" role="alert">`,
@@ -383,12 +403,15 @@
             alertPlaceholder.append(wrapper)
             }
 
-            const alertTrigger = document.getElementById('liveAlertBtn')
-            if (alertTrigger) {
-                alertTrigger.addEventListener('click', () => {
-                    appendAlert('Nice, you triggered this alert message!', 'success')
-                })
-            }
+            alert(customMessage, 'success')
+           
+            //hide the alert
+
+            // setTimeout(() => {
+            // const alertTohide = bootstrap.Alert.getOrCreateInstance('#success-alert')
+            // alertTohide.close()
+            // }, 2000);
+           
     }
     
     function setupUI() //afficher ou cacher login/regiter
