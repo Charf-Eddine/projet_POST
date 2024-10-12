@@ -58,6 +58,41 @@
     </div>
      <!--// LOGIN MODAL //-->
 
+      <!--REGISTER MODAL-->
+    <div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Register A New User</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <form>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="register-name-input" value="Baddy81">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Username:</label>
+                        <input type="text" class="form-control" id="register-username-input" value="Baddy81">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Password:</label>
+                        <input type="password" class="form-control" id="register-password-input" value="123456">
+                    </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="registerBtnClicked()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!--// REGISTER MODAL //-->
+
      <!-- ====================== ALERTS ==================== --> 
      <div id="success-alert" class="show fade"  style="position: fixed;z-index: 999999;width: 30%;top: 0;right: 0;"></div>
 
@@ -86,7 +121,7 @@
                     <!-- NON-LOGGED IN USER -->
                     <div  class="d-flex w-100 justify-content-end" id="login-div">
                         <button id="login-btn" type="button" data-bs-toggle="modal" data-bs-target="#login-modal" class="btn btn-outline-success mx-2">login</button>
-                        <button id="register-btn" type="button" class="btn btn-outline-success">register</button>
+                        <button id="register-btn" type="button" data-bs-toggle="modal" data-bs-target="#register-modal" class="btn btn-outline-success">register</button>
                     </div>
                     <!--// NON-LOGGED IN USER //-->
 
@@ -348,7 +383,8 @@
        }
     })
 
-    function loginBtnClicked(){
+    function loginBtnClicked()
+    {
         const username = document.getElementById("username-input").value 
         const password = document.getElementById("password-input").value 
 
@@ -372,23 +408,61 @@
 
             modalInstance.hide()
             // alert("user logged in succesfully ")
-            showSuccessAlert("logged in successfully")
+            showAlert("logged in successfully","success")
             setupUI()
         })
         // console.log(username,password)
     }
    
+    function registerBtnClicked()
+    {
+        const name = document.getElementById("register-name-input").value 
+        const username = document.getElementById("register-username-input").value 
+        const password = document.getElementById("register-password-input").value 
+
+       
+        const params={
+            "username": username,
+            "password": password,
+            "name": name
+        }
+
+        const url=`${baseUrl}/register`
+
+        axios.post(url,params)
+        .then((response)=>{
+            // enregister le token et le user dans le localStorage
+            // console.log(response.data.token)
+            localStorage.setItem("token",response.data.token)
+            localStorage.setItem("user",JSON.stringify(response.data.user))
+
+            // fermer la modal après le login
+            const registerModal= document.getElementById("register-modal")
+            const modalInstance=bootstrap.Modal.getInstance(registerModal)
+
+            modalInstance.hide()
+            // alert("user logged in succesfully ")
+            showAlert("New User Registered successfully")
+            setupUI()
+        }).catch((error)=>{
+            const message= error.response.data.message
+            showAlert(message,"danger")
+
+        })
+        // console.log(username,password)
+    }
+
     function logout()
     {
         localStorage.removeItem("token")
         localStorage.removeItem("user")
 
-        showSuccessAlert("logged out successfully")
+        showAlert("logged out successfully","success")
        
         setupUI()
     }
 
-    function showSuccessAlert(customMessage)
+    function showAlert(customMessage,type="success")
     {
         const alertPlaceholder = document.getElementById('success-alert')
             const alert = (message, type) => {
@@ -403,7 +477,7 @@
             alertPlaceholder.append(wrapper)
             }
 
-            alert(customMessage, 'success')
+            alert(customMessage, type)
            
             //hide the alert
 
